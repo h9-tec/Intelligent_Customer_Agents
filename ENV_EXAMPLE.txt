@@ -1,0 +1,60 @@
+# Copy this to .env and fill values. If root .env.example cannot be created in this environment, use this file as reference.
+
+# Django
+DJANGO_SECRET_KEY=
+DJANGO_DEBUG=True
+DJANGO_ALLOWED_HOSTS=localhost,127.0.0.1
+
+# Database
+DB_NAME=commerce_db
+DB_USER=root
+DB_PASSWORD=
+DB_HOST=localhost
+DB_PORT=3306
+
+# Redis/Celery
+REDIS_URL=redis://localhost:6379/0
+
+# WhatsApp
+WA_VERIFY_TOKEN=
+WA_PHONE_ID=
+WA_BEARER_TOKEN=
+MEDIA_BASE_URL=
+
+# OpenAI
+OPENAI_API_KEY=
+OPENAI_MODEL_ID_CLASSIFY=gpt-4
+OPENAI_MODEL_ID_CHAT=gpt-4
+OPENAI_MODEL_ID_EMBEDDINGS=text-embedding-ada-002
+
+# LLM Provider (choose one)
+LLM_PROVIDER=openai  # openai|openrouter|vllm
+OPENROUTER_API_KEY=
+OPENROUTER_BASE_URL=https://openrouter.ai/api/v1
+VLLM_BASE_URL=http://localhost:8000/v1
+LLM_MODEL_ID_CLASSIFY=
+LLM_MODEL_ID_CHAT=
+LLM_REQUEST_TIMEOUT=30
+
+# Business
+PRODUCT_DOMAIN=electronics
+DEFAULT_CURRENCY=USD
+ORDER_NUMBER_PREFIX=ORD
+
+# Thresholds
+TOKENS_MAX=3000
+RECOS_TOPK=5
+FAQ_TOPK=3
+DIST_REF_EN=0.7
+DIST_REF_AR=0.75
+
+# Housekeeping
+ABANDONED_CART_DAYS=7
+ABANDONED_CHAT_DAYS=30
+
+# Shopify
+SHOPIFY_STORE_URL=
+SHOPIFY_ACCESS_TOKEN=
+SHOPIFY_API_VERSION=2024-01
+
+
