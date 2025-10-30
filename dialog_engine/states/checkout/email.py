@@ -11,14 +11,38 @@ from ...states.abstract.chat_state import BaseChatState
 
 class EmailState(BaseChatState):
     def handle(self) -> Iterable[object]:
+        language = self.event.get("language", "en")
         email = self.event.get("text", "").strip()
+        
         try:
             validate_email(email)
         except ValidationError:
-            yield TextMessage(to=self.chat.customer.phone, text="Please provide a valid email address.")
+            email_error_msg = {
+                "en": "Please provide a valid email address.",
+                "ar": "يرجى تقديم عنوان بريد إلكتروني صالح.",
+            }
+            yield TextMessage(
+                to=self.chat.customer.phone,
+                text=email_error_msg.get(language, email_error_msg["en"])
+            )
             return
+        
+        # Save email
         self.chat.customer.email = email
         self.chat.customer.save(update_fields=["email"])
-        yield TextMessage(to=self.chat.customer.phone, text="Email updated.")
+        
+        email_saved_msg = {
+            "en": "Email updated. Continuing checkout...",
+            "ar": "تم تحديث البريد الإلكتروني. متابعة الشراء...",
+        }
+        yield TextMessage(
+            to=self.chat.customer.phone,
+            text=email_saved_msg.get(language, email_saved_msg["en"])
+        )
+        
+        # Continue checkout flow - proceed to shipping selection
+        from .choose_shipping import ChooseShippingState
+        shipping_state = ChooseShippingState(self.chat, self.event)
+        yield from shipping_state.handle()
 
 

@@ -129,9 +129,35 @@ def finalize_order(order: Order) -> Order:
     return order
 
 
+@transaction.atomic
 def cancel_order(order: Order) -> Order:
-    if order.status in {Order.Status.CANCELLED, Order.Status.COMPLETED}:
+    """
+    Cancel an order, restoring stock if the order was completed and refunding payments.
+    
+    Args:
+        order: The order to cancel.
+        
+    Returns:
+        The cancelled order.
+    """
+    if order.status == Order.Status.CANCELLED:
         return order
+    
+    # If order was COMPLETED, restore stock
+    if order.status == Order.Status.COMPLETED:
+        for item in order.cart.items.select_related("product"):
+            product = item.product
+            product.stock += item.quantity
+            product.save(update_fields=["stock"])
+    
+    # Refund any successful payments
+    for payment in order.payments.filter(status="success"):
+        try:
+            payment.refund(reason="Order cancellation")
+        except Exception:
+            # Log error but continue with cancellation
+            pass
+    
     order.status = Order.Status.CANCELLED
     order.save(update_fields=["status"])
     return order
